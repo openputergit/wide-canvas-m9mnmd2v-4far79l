@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .calculator {
+            background: linear-gradient(145deg, #e6e6e6, #ffffff);
+            box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+        }
+        .calc-btn {
+            transition: all 0.2s ease;
+        }
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+        @media (max-width: 640px) {
+            .calculator {
+                width: 95% !important;
+                margin: 10px auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="calculator w-[320px] p-6 rounded-2xl">
+        <div class="mb-4">
+            <input type="text" id="display" readonly class="w-full h-16 px-4 text-right text-2xl font-semibold bg-gray-50 rounded-lg focus:outline-none" value="0">
+        </div>
+        <div class="grid grid-cols-4 gap-3">
+            <button onclick="clearDisplay()" class="calc-btn col-span-2 h-14 bg-red-500 text-white rounded-lg hover:bg-red-600">AC</button>
+            <button onclick="deleteLast()" class="calc-btn h-14 bg-gray-200 rounded-lg hover:bg-gray-300"><i class="bi bi-backspace"></i></button>
+            <button onclick="appendOperator('/')" class="calc-btn h-14 bg-blue-500 text-white rounded-lg hover:bg-blue-600">÷</button>
+            
+            <button onclick="appendNumber('7')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">7</button>
+            <button onclick="appendNumber('8')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">8</button>
+            <button onclick="appendNumber('9')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">9</button>
+            <button onclick="appendOperator('*')" class="calc-btn h-14 bg-blue-500 text-white rounded-lg hover:bg-blue-600">×</button>
+            
+            <button onclick="appendNumber('4')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">4</button>
+            <button onclick="appendNumber('5')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">5</button>
+            <button onclick="appendNumber('6')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">6</button>
+            <button onclick="appendOperator('-')" class="calc-btn h-14 bg-blue-500 text-white rounded-lg hover:bg-blue-600">-</button>
+            
+            <button onclick="appendNumber('1')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">1</button>
+            <button onclick="appendNumber('2')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">2</button>
+            <button onclick="appendNumber('3')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">3</button>
+            <button onclick="appendOperator('+')" class="calc-btn h-14 bg-blue-500 text-white rounded-lg hover:bg-blue-600">+</button>
+            
+            <button onclick="appendNumber('0')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100 col-span-2">0</button>
+            <button onclick="appendNumber('.')" class="calc-btn h-14 bg-white rounded-lg hover:bg-gray-100">.</button>
+            <button onclick="calculate()" class="calc-btn h-14 bg-green-500 text-white rounded-lg hover:bg-green-600">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let calculation = '';
+
+        function appendNumber(num) {
+            if (display.value === '0' && num !== '.') {
+                display.value = num;
+            } else {
+                display.value += num;
+            }
+            calculation = display.value;
+        }
+
+        function appendOperator(operator) {
+            const lastChar = display.value.slice(-1);
+            if (['+', '-', '*', '/'].includes(lastChar)) {
+                display.value = display.value.slice(0, -1) + operator;
+            } else {
+                display.value += operator;
+            }
+            calculation = display.value;
+        }
+
+        function clearDisplay() {
+            display.value = '0';
+            calculation = '';
+        }
+
+        function deleteLast() {
+            if (display.value.length === 1) {
+                display.value = '0';
+            } else {
+                display.value = display.value.slice(0, -1);
+            }
+            calculation = display.value;
+        }
+
+        function calculate() {
+            try {
+                const result = eval(calculation);
+                display.value = Number.isInteger(result) ? result : result.toFixed(8);
+                calculation = display.value;
+            } catch (error) {
+                display.value = 'Error';
+                setTimeout(() => {
+                    clearDisplay();
+                }, 1000);
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            if (/[0-9.]/.test(key)) {
+                appendNumber(key);
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                appendOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            }
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
